@@ -247,6 +247,17 @@ static inline size_t _compose_elapsed_time_opt(dhcpv6_opt_elapsed_time_t *time)
     return len + sizeof(dhcpv6_opt_t);
 }
 
+static inline size_t _compose_mud_url_opt(dhcpv6_opt_mud_url_t *mud_url_opt,
+                                          char mud_url[])
+{
+    uint16_t len = strlen(mud_url);
+
+    mud_url_opt->type = byteorder_htons(DHCPV6_OPT_MUD_URL);
+    mud_url_opt->len = byteorder_htons(len);
+    strcpy(mud_url_opt->mudString, mud_url);
+    return len + sizeof(dhcpv6_opt_mud_url_t);
+}
+
 static inline size_t _compose_oro_opt(dhcpv6_opt_oro_t *oro, uint16_t *opts,
                                         unsigned opts_num)
 {
@@ -707,6 +718,23 @@ static void _solicit_servers(event_t *event)
     msg_len += _compose_elapsed_time_opt(time);
     msg_len += _compose_oro_opt((dhcpv6_opt_oro_t *)&send_buf[msg_len], oro_opts,
                                 ARRAY_SIZE(oro_opts));
+
+    #ifdef MUD_URL
+    char mud_url[] = MUD_URL;
+    if (strlen(mud_url) <= 253 && strlen(mud_url) > 0) {
+        if (strncmp(mud_url, "https://", 8)==0){
+            msg_len += _compose_mud_url_opt((dhcpv6_opt_mud_url_t *)&send_buf[msg_len],
+                                        mud_url);
+        }
+        else {
+            DEBUG("DHCPv6 client: MUD URL has to start with https://\n");
+        }
+    }
+    else {
+        DEBUG("DHCPv6 client: Illegal length for MUD URL\n");
+    }
+    #endif
+
     msg_len += _add_ia_pd_from_config(&send_buf[msg_len]);
     DEBUG("DHCPv6 client: send SOLICIT\n");
     _flush_stale_replies(&sock);

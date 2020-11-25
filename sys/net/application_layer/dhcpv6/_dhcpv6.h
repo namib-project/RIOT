@@ -214,6 +214,17 @@ typedef struct __attribute__((packed)) {
     network_uint32_t value;         /**< overriding value for SOL_MAX_RT (in sec) */
 } dhcpv6_opt_smr_t;
 
+/**
+ * @brief   MUD URL DHCPv6 option format
+ * @see [RFC 8520, section 10]
+ *      (https://tools.ietf.org/html/rfc8520#section-10)
+ */
+typedef struct __attribute__((packed)) {
+    network_uint16_t type;  /**< @ref DHCPV6_OPT_MUD_URL */
+    network_uint16_t len;   /**< length of the MUDstring in octets. */
+    char mudString[];       /**< MUD URL using the "https" scheme */
+} dhcpv6_opt_mud_url_t;
+
 #ifdef __cplusplus
 }
 #endif
