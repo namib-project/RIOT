@@ -14,12 +14,15 @@ import time
 
 from scapy.all import AsyncSniffer, sendp, Ether, IPv6, UDP
 from scapy.all import DHCP6_Solicit, DHCP6_Advertise, DHCP6_Request, DHCP6_Reply
-from scapy.all import DHCP6OptClientId, DHCP6OptServerId, DHCP6OptIA_PD
+from scapy.all import DHCP6OptClientId, DHCP6OptServerId, DHCP6OptIA_PD, DHCP6OptUnknown
 from scapy.all import DUID_LL, DHCP6OptIAPrefix
 from testrunner import run
 
 
 TIMEOUT = 1
+
+MUD_OPTION_CODE = 112
+MUD_TEST_URL = b'https://example.org'
 
 
 def get_upstream_netif(child):
@@ -122,6 +125,13 @@ def testfunc(child):
     assert pkt[DHCP6OptClientId].duid[DUID_LL].lladdr in upstream_hwaddrs
     # and it is asking for a prefix delegation
     assert DHCP6OptIA_PD in pkt
+
+    # MUD URL option in DHCPv6 is not yet supported by scapy
+    assert DHCP6OptUnknown in pkt
+    mud_packet = pkt[DHCP6OptUnknown]
+    assert mud_packet.optcode == 112
+    assert mud_packet.optlen == len(MUD_TEST_URL)
+    assert mud_packet.data == MUD_TEST_URL
 
     # reply to solicit with advertise and a prefix provided
     trid = pkt[DHCP6_Solicit].trid

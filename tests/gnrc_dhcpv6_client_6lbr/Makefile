@@ -24,6 +24,8 @@ else
   STATIC_ROUTES ?= 1
 endif
 
+MUD_URL="https://example.org"
+
 # The test requires some setup and to be run as root
 # So it cannot currently be run on CI
 TEST_ON_CI_BLACKLIST += all
@@ -41,6 +43,11 @@ ifeq (1,$(STATIC_ROUTES))
   # `fe80::2`.
   CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=3
 endif
+endif
+
+ifdef MUD_URL
+  QUOTATION = "\""
+  CFLAGS += -DMUD_URL=$(QUOTATION)$(MUD_URL)$(QUOTATION)
 endif
 
 ifeq (,$(filter native,$(BOARD)))
