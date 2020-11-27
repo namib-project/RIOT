@@ -248,7 +248,7 @@ static inline size_t _compose_elapsed_time_opt(dhcpv6_opt_elapsed_time_t *time)
 }
 
 static inline size_t _compose_mud_url_opt(dhcpv6_opt_mud_url_t *mud_url_opt,
-                                          char mud_url[])
+                                          const char *mud_url)
 {
     uint16_t len = strlen(mud_url);
 
@@ -720,7 +720,7 @@ static void _solicit_servers(event_t *event)
                                 ARRAY_SIZE(oro_opts));
 
     #ifdef MUD_URL
-    char mud_url[] = MUD_URL;
+    const char mud_url[] = MUD_URL;
     if (strlen(mud_url) <= 253 && strlen(mud_url) > 0) {
         if (strncmp(mud_url, "https://", 8)==0){
             msg_len += _compose_mud_url_opt((dhcpv6_opt_mud_url_t *)&send_buf[msg_len],
