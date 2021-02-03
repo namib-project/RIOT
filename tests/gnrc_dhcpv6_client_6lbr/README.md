@@ -14,7 +14,7 @@ make flash
 And run the tests using
 
 ```
-sudo make test
+sudo make test-as-root
 ```
 
 Note that root privileges are required since `scapy` needs to construct Ethernet
