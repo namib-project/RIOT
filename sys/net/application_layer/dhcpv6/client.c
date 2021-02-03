@@ -955,6 +955,7 @@ static void _request_renew_rebind(uint8_t type)
     msg_len += _compose_elapsed_time_opt(time);
     msg_len += _compose_oro_opt((dhcpv6_opt_oro_t *)&send_buf[msg_len], oro_opts,
                                 ARRAY_SIZE(oro_opts));
+    msg_len += _add_ia_na(&send_buf[msg_len], sizeof(send_buf) - msg_len);
     msg_len += _add_ia_pd_from_config(&send_buf[msg_len], sizeof(send_buf) - msg_len);
     _flush_stale_replies(&sock);
     while (sock_udp_send(&sock, send_buf, msg_len, &remote) <= 0) {}
