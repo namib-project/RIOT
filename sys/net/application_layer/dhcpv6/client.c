@@ -500,9 +500,9 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
                 break;
         }
     }
-    if ((cid == NULL) || (sid == NULL) || (ia_pd == NULL) || (ia_na == NULL)) {
+    if ((cid == NULL) || (sid == NULL) || (ia_pd == NULL && ia_na == NULL)) {
         DEBUG("DHCPv6 client: ADVERTISE does not contain either server ID, "
-              "client ID, IA_PD, or IA_NA option\n");
+              "client ID, IA_PD or IA_NA option\n");
         return -1;
     }
     if (!_check_status_opt(status) || !_check_cid_opt(cid)) {
@@ -673,6 +673,7 @@ static bool _parse_reply(uint8_t *rep, size_t len)
 {
     dhcpv6_opt_duid_t *cid = NULL, *sid = NULL;
     dhcpv6_opt_ia_pd_t *ia_pd = NULL;
+    dhcpv6_opt_ia_na_t *ia_na = NULL;
     dhcpv6_opt_status_t *status = NULL;
     dhcpv6_opt_smr_t *smr = NULL;
     size_t orig_len = len;
@@ -701,6 +702,9 @@ static bool _parse_reply(uint8_t *rep, size_t len)
             case DHCPV6_OPT_IA_PD:
                 ia_pd = (dhcpv6_opt_ia_pd_t *)opt;
                 break;
+            case DHCPV6_OPT_IA_NA:
+                ia_na = (dhcpv6_opt_ia_na_t *)opt;
+                break;
             case DHCPV6_OPT_SMR:
                 smr = (dhcpv6_opt_smr_t *)opt;
                 break;
@@ -708,9 +712,9 @@ static bool _parse_reply(uint8_t *rep, size_t len)
                 break;
         }
     }
-    if ((cid == NULL) || (sid == NULL) || (ia_pd == NULL)) {
+    if ((cid == NULL) || (sid == NULL) || (ia_pd == NULL && ia_na == NULL)) {
         DEBUG("DHCPv6 client: ADVERTISE does not contain either server ID, "
-              "client ID or IA_PD option\n");
+              "client ID, IA_PD or IA_NA option\n");
         return false;
     }
     if (!_check_cid_opt(cid) || !_check_sid_opt(sid)) {
