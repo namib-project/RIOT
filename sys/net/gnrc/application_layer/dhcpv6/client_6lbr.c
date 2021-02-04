@@ -104,6 +104,7 @@ static void _configure_dhcpv6_client(void)
     while ((netif = gnrc_netif_iter(netif))) {
         if (gnrc_netif_is_6lo(netif)) {
             dhcpv6_client_req_ia_pd(netif->pid, 64U);
+            dhcpv6_client_req_ia_na(netif->pid);
         }
     }
 }
