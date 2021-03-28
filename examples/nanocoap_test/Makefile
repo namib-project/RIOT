@@ -12,8 +12,9 @@ RIOTBASE ?= $(CURDIR)/../..
 USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
-USEMODULE += gnrc_ipv6_default
-USEMODULE += sock_udp
+USEMODULE += gnrc_ipv6_router_default
+USEMODULE += gnrc_udp
+USEMODULE += gnrc_sock_udp
 # Additional networking modules that can be dropped if not needed
 USEMODULE += gnrc_icmpv6_echo
 
@@ -29,6 +30,9 @@ USEMODULE += hashes
 USEMODULE += shell
 USEMODULE += shell_commands
 
+#Web of Things
+USEMODULE += wot
+
 # Comment this out to enable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
@@ -41,6 +45,11 @@ LOW_MEMORY_BOARDS := nucleo-f334r8
 ifneq (,$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
   $(info Using low-memory configuration for microcoap_server.)
   ## low-memory tuning values
+  # lower pktbuf buffer size
+  # Set GNRC_PKTBUF_SIZE via CFLAGS if not being set via Kconfig.
+ifndef CONFIG_GNRC_PKTBUF_SIZE
+  CFLAGS += -DCONFIG_GNRC_PKTBUF_SIZE=1000
+endif
   USEMODULE += prng_minstd
 endif
 
@@ -48,14 +57,6 @@ endif
 QUIET ?= 1
 
 include $(RIOTBASE)/Makefile.include
-
-ifneq (,$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
-  # lower pktbuf buffer size
-  # Set GNRC_PKTBUF_SIZE via CFLAGS if not being set via Kconfig.
-  ifndef CONFIG_GNRC_PKTBUF_SIZE
-    CFLAGS += -DCONFIG_GNRC_PKTBUF_SIZE=1000
-  endif
-endif
 
 # Set a custom channel if needed
 include $(RIOTMAKE)/default-radio-settings.inc.mk

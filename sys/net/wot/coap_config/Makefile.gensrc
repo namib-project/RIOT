@@ -1,0 +1,9 @@
+WOT_JSON_FILES = $(APPDIR)/$(WOT_INSTANCE_INFO) $(APPDIR)/$(WOT_THING_MODEL)
+
+$(GENOBJC): $(SRC)
+
+$(SRC): $(GENSRC)
+
+$(GENSRC): $(WOT_JSON_FILES)
+	mkdir -p $(BINDIR)/$(MODULE) && cd $(BINDIR)/$(MODULE) && \
+		$(WOT_TD_GEN) --appdir $(APPDIR) --board $(BOARD) --used_modules $(USEMODULE) --thing_model $(WOT_THING_MODEL) --thing_instance_info $(WOT_INSTANCE_INFO) --output_path $(WOT_TD_CONFIG)

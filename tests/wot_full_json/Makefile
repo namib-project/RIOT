@@ -1,15 +1,11 @@
-# name of your application
-APPLICATION = hello-world
-
 # If no BOARD is found in the environment, use this default:
-BOARD ?= native
+BOARD ?= nrf52dk
 
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-USEMODULE += ztimer
-USEMODULE += ztimer_usec
-USEMODULE += ztimer_periph_rtt
+USEMODULE += wot
+USEMODULE += xtimer
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the

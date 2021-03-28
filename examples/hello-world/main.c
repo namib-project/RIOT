@@ -20,9 +20,11 @@
  */
 
 #include <stdio.h>
+#include "ztimer.h"
 
 int main(void)
 {
+    ztimer_sleep(ZTIMER_USEC, 10000000);
     puts("Hello World!");
 
     printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);

@@ -72,6 +72,12 @@ ifneq (,$(filter trace,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
+ifneq (,$(filter wot_coap,$(USEMODULE)))
+  USEMODULE += gnrc_netdev_default
+  USEMODULE += gnrc_ipv6_router_default
+  USEMODULE += gcoap
+endif
+
 ifneq (,$(filter shell_commands,$(USEMODULE)))
   ifneq (,$(filter dfplayer,$(USEMODULE)))
     USEMODULE += auto_init_multimedia
