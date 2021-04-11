@@ -218,6 +218,17 @@ class ThingDescription(object):
         self.insert_bindings(bindings)
         self._set_context()
         self._set_type()
+        self.validate()
+
+    def validate(self):
+        for affordance_type in AFFORDANCE_TYPES:
+            self.validate_affordances(affordance_type)
+
+    def validate_affordances(self, affordance_type):
+        affordances = getattr(self, affordance_type)
+        required_affordances = affordances.pop("required")
+        for required_affordance in required_affordances:
+            assert required_affordance in affordances
 
     def __iter__(self):
         for key in self.__dict__:
@@ -253,6 +264,8 @@ class ThingDescription(object):
         return json.loads(thing_model_as_string)
 
     def insert_meta_data(self, meta_data):
+        if meta_data is None:
+            return
         if meta_data.get("@context", None) and isinstance(meta_data["@context"], str):
             meta_data["@context"] = [meta_data["@context"]]
         for context in meta_data.get("@context", []):
@@ -264,7 +277,7 @@ class ThingDescription(object):
             meta_data["@type"] = [meta_data["@type"]]
         for json_ld_type in meta_data.get("@type", []):
             if json_ld_type != "ThingModel":
-                getattr(self, "@type").add(json_ld_type)
+                getattr(self, "@type").append(json_ld_type)
         default_security = False
         if not meta_data.get("securityDefinitions", None):
             if not self.securityDefinitions:
@@ -300,6 +313,8 @@ class ThingDescription(object):
                 setattr(self, field_name, meta_data[field_name])
 
     def insert_bindings(self, bindings):
+        if bindings is None:
+            return
         for affordance_type in AFFORDANCE_TYPES:
             affordance_bindings = bindings.get(affordance_type, dict())
             affordances = getattr(self, affordance_type)
@@ -382,6 +397,7 @@ class ThingModel(object):
         return ThingModel(thing_model_dict, perform_extension=perform_extension)
 
     def validate(self):
+        # TODO: Move all validation of the TD to this function
         context = getattr(self, "@context")
         at_type = getattr(self, "@type")
 
@@ -406,6 +422,13 @@ class ThingModel(object):
             self.security = [self.security]
         else:
             assert isinstance(self.security, list)
+
+        for affordance_type in AFFORDANCE_TYPES:
+            affordances = getattr(self, affordance_type)
+            if "required" in affordances:
+                assert isinstance(affordances["required"], list)
+            else:
+                affordances["required"] = []
 
     def get_extension_link(self):
         for link in self.links:
@@ -449,8 +472,6 @@ class ThingModel(object):
         for x in thing_model.security:
             if x not in thing_model.security:
                 self.security.append(x)
-
-        print(thing_model.securityDefinitions)
 
         for name, definition in thing_model.securityDefinitions.items():
             if name not in self.securityDefinitions:
