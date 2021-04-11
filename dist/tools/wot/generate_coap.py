@@ -218,6 +218,17 @@ class ThingDescription(object):
         self.insert_bindings(bindings)
         self._set_context()
         self._set_type()
+        self.validate()
+
+    def validate(self):
+        for affordance_type in AFFORDANCE_TYPES:
+            self.validate_affordances(affordance_type)
+
+    def validate_affordances(self, affordance_type):
+        affordances = getattr(self, affordance_type)
+        required_affordances = affordances.pop("required")
+        for required_affordance in required_affordances:
+            assert required_affordance in affordances
 
     def __iter__(self):
         for key in self.__dict__:
@@ -266,7 +277,7 @@ class ThingDescription(object):
             meta_data["@type"] = [meta_data["@type"]]
         for json_ld_type in meta_data.get("@type", []):
             if json_ld_type != "ThingModel":
-                getattr(self, "@type").add(json_ld_type)
+                getattr(self, "@type").append(json_ld_type)
         default_security = False
         if not meta_data.get("securityDefinitions", None):
             if not self.securityDefinitions:
@@ -411,6 +422,13 @@ class ThingModel(object):
             self.security = [self.security]
         else:
             assert isinstance(self.security, list)
+
+        for affordance_type in AFFORDANCE_TYPES:
+            affordances = getattr(self, affordance_type)
+            if "required" in affordances:
+                assert isinstance(affordances["required"], list)
+            else:
+                affordances["required"] = []
 
     def get_extension_link(self):
         for link in self.links:
