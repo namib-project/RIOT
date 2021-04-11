@@ -253,6 +253,8 @@ class ThingDescription(object):
         return json.loads(thing_model_as_string)
 
     def insert_meta_data(self, meta_data):
+        if meta_data is None:
+            return
         if meta_data.get("@context", None) and isinstance(meta_data["@context"], str):
             meta_data["@context"] = [meta_data["@context"]]
         for context in meta_data.get("@context", []):
@@ -300,6 +302,8 @@ class ThingDescription(object):
                 setattr(self, field_name, meta_data[field_name])
 
     def insert_bindings(self, bindings):
+        if bindings is None:
+            return
         for affordance_type in AFFORDANCE_TYPES:
             affordance_bindings = bindings.get(affordance_type, dict())
             affordances = getattr(self, affordance_type)
@@ -382,6 +386,7 @@ class ThingModel(object):
         return ThingModel(thing_model_dict, perform_extension=perform_extension)
 
     def validate(self):
+        # TODO: Move all validation of the TD to this function
         context = getattr(self, "@context")
         at_type = getattr(self, "@type")
 
