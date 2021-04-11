@@ -473,8 +473,6 @@ class ThingModel(object):
             if x not in thing_model.security:
                 self.security.append(x)
 
-        print(thing_model.securityDefinitions)
-
         for name, definition in thing_model.securityDefinitions.items():
             if name not in self.securityDefinitions:
                 self.securityDefinitions[name] = definition
