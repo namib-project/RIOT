@@ -927,30 +927,30 @@ def generate_data_schema(parent: CStruct, schema: dict, schema_name: str) -> Non
 
 
 def add_property_affordances(parent, thing):
-    if thing["properties"]:
-        properties = thing["properties"]
+    if thing[PROPERTIES_NAME]:
+        properties = thing[PROPERTIES_NAME]
         struct_name = f'{parent.struct_name}_property'
         for index, (property_name, prop) in enumerate(properties.items()):
             if index == 0:
-                parent.add_reference_field("properties", f'{struct_name}_0')
+                parent.add_reference_field(PROPERTIES_NAME, f'{struct_name}_0')
             struct = CStruct(f"{NAMESPACE}_prop_affordance_t",
                              f'{struct_name}_{index}')
             struct.add_field("key", f'"{property_name}"')
             struct.add_boolean_field("observable", "observable", prop)
             add_data_schema_field(struct, "data_schema",
                                   property_name, properties)
-            add_interaction_affordance(struct, "properties", prop)
+            add_interaction_affordance(struct, PROPERTIES_NAME, prop)
             add_next_field(index, struct, struct_name, properties)
             parent.add_child(struct)
 
 
 def add_action_affordances(parent, thing):
-    if thing["actions"]:
-        actions = thing["actions"]
+    if thing[ACTIONS_NAME]:
+        actions = thing[ACTIONS_NAME]
         struct_name = f'{parent.struct_name}_action'
         for index, (action_name, action) in enumerate(actions.items()):
             if index == 0:
-                parent.add_reference_field("actions", f'{struct_name}_0')
+                parent.add_reference_field(ACTIONS_NAME, f'{struct_name}_0')
             struct = CStruct(f"{NAMESPACE}_action_affordance_t",
                              f'{struct_name}_{index}')
             struct.add_field("key", f'"{action_name}"')
@@ -958,18 +958,18 @@ def add_action_affordances(parent, thing):
             struct.add_boolean_field("idempotent", "idempotent", action)
             add_data_schema_field(struct, "input", "input", action)
             add_data_schema_field(struct, "output", "output", action)
-            add_interaction_affordance(struct, "actions", action)
+            add_interaction_affordance(struct, ACTIONS_NAME, action)
             add_next_field(index, struct, struct_name, actions)
             parent.add_child(struct)
 
 
 def add_event_affordances(parent, thing):
-    if thing["events"]:
-        events = thing["events"]
+    if thing[EVENTS_NAME]:
+        events = thing[EVENTS_NAME]
         struct_name = f'{parent.struct_name}_event'
         for index, (event_name, event) in enumerate(events.items()):
             if index == 0:
-                parent.add_reference_field("events", f'{struct_name}_0')
+                parent.add_reference_field(EVENTS_NAME, f'{struct_name}_0')
             struct = CStruct(f"{NAMESPACE}_event_affordance_t",
                              f'{struct_name}_{index}')
             struct.add_field("key", f'"{event_name}"')
@@ -978,7 +978,7 @@ def add_event_affordances(parent, thing):
             add_data_schema_field(struct, "data", "data", event)
             add_data_schema_field(struct, "cancellation",
                                   "cancellation", event)
-            add_interaction_affordance(struct, "events", event)
+            add_interaction_affordance(struct, EVENTS_NAME, event)
             add_next_field(index, struct, struct_name, events)
             parent.add_child(struct)
 
