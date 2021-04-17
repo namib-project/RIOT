@@ -428,10 +428,6 @@ def get_wot_json(app_path: str, json_path: str) -> dict:
 def parse_command_line_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Web of Things helper script')
     parser.add_argument('--appdir', help='Define directory of app')
-    # TODO: Check if board and saul parameters are still needed
-    parser.add_argument('--board', help='Define used board')
-    parser.add_argument('--saul', action='store_true',
-                        help='Define if WoT TD SAUL is used')
     parser.add_argument('--thing_models',
                         help="Thing Models (in JSON format) which serve as the basis of the Thing Description",
                         nargs='+')
@@ -508,14 +504,6 @@ def generate_coap_link_params(coap_resources: List[dict]) -> str:
         struct_elements.append(generate_coap_link_param(coap_resource))
 
     return f'\n{INDENT}'.join(struct_elements) + "\n};"
-
-
-def get_affordance_type_specifier(affordance_type: str) -> str:
-    return AFFORDANCE_TYPE_SPECIFIERS[affordance_type]
-
-
-def get_affordance_struct_name(affordance_name: str) -> str:
-    return f'{NAMESPACE}_{affordance_name}'
 
 
 def add_next_field(index: int, struct: CStruct, struct_name: str, struct_data, use_struct_index=True):
