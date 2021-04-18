@@ -445,6 +445,7 @@ def parse_command_line_arguments() -> argparse.Namespace:
                         help="Thing Models (in JSON format) which serve as the basis of the Thing Description",
                         nargs='+')
     parser.add_argument('--meta_data_path',
+                        nargs='?',
                         help="JSON file with user defined meta data")
     parser.add_argument('--placeholders_path',
                         nargs='?',
@@ -1298,11 +1299,15 @@ def get_result(app_dir_path, thing_model_paths, meta_data_path, bindings_path, p
     if placeholder_path:
         placeholders = get_wot_json(app_dir_path, placeholder_path)
 
-    meta_data = get_wot_json(app_dir_path, meta_data_path)
-    meta_data = ThingDescription.replace_placeholders(meta_data, placeholders)
+    meta_data = None
+    if meta_data_path:
+        meta_data = get_wot_json(app_dir_path, meta_data_path)
+        meta_data = ThingDescription.replace_placeholders(meta_data, placeholders)
 
-    bindings = get_wot_json(app_dir_path, bindings_path)
-    bindings = ThingDescription.replace_placeholders(bindings, placeholders)
+    bindings = None
+    if bindings_path:
+        bindings = get_wot_json(app_dir_path, bindings_path)
+        bindings = ThingDescription.replace_placeholders(bindings, placeholders)
 
     thing_model = thing_model.generate_thing_description(meta_data, bindings, placeholders)
     thing_model = dict(thing_model)
