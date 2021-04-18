@@ -5,5 +5,6 @@ $(GENOBJC): $(SRC)
 $(SRC): $(GENSRC)
 
 $(GENSRC): $(WOT_JSON_FILES)
+	@echo "[INFO] Generating WoT CoAP Config under $(WOT_TD_CONFIG)"
 	@mkdir -p $(BINDIR)/$(MODULE) && cd $(BINDIR)/$(MODULE) && \
 		$(WOT_TD_GEN) --appdir $(APPDIR) --thing_models $(WOT_THING_MODELS) --meta_data_path $(WOT_META_DATA) --bindings_path $(WOT_BINDINGS_PATH) --placeholders_path $(WOT_PLACEHOLDERS_PATH) --output_path $(WOT_TD_CONFIG)
