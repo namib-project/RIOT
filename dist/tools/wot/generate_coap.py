@@ -274,8 +274,7 @@ class CStruct(object):
         code.append(self.generate_struct())
         return SEPARATOR.join(code)
 
-    @staticmethod
-    def _generate_field(field_name: str, field_value: str) -> str:
+    def _generate_field(self, field_name: str, field_value: str) -> str:
         return f".{field_name} = {field_value},"
 
     def add_reference_field(self, field_name: str, reference_name: str) -> None:
