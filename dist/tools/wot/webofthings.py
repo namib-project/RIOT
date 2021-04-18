@@ -112,8 +112,8 @@ class ThingDescription(object):
                 self.securityDefinitions = {"nosec_sc": {"scheme": "none"}}
                 self.security = ["nosec_sc"]
                 default_security = True
-                print(
-                    "WARNING: No security definitions found! Using \"no security\" as default.")
+                info = 'No security definitions found! Using "no security" as default.'
+                print(f"[INFO] {info}")
         else:
             if not self.securityDefinitions:
                 self.securityDefinitions = meta_data["securityDefinitions"]
