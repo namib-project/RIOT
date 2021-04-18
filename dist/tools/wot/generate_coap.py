@@ -1182,6 +1182,10 @@ def add_context(parent: CStruct, schema):
         struct = CStruct("json_ld_context_t",
                          f'{struct_name}_{index}')
         if isinstance(context, str):
+            if context == "https://www.w3.org/2019/wot/td/v1":
+                # Don't add this URL to the context as this is already
+                # being done by the C implementation
+                continue
             struct.add_field("value", f'"{context}"')
         else:
             key, value = list(context.items())[0]
