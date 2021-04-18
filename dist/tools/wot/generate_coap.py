@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2021 Universität Bremen
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+
 import argparse
 import json
 import requests
@@ -5,7 +13,13 @@ import os
 import sys
 from urllib.parse import urlparse, urljoin
 from datetime import datetime
-from typing import List, Tuple, IO, Any
+from typing import (
+    List,
+    Tuple,
+    IO,
+    Any,
+    Optional,
+)
 import warnings
 from webofthings import (
     ThingDescription,
@@ -204,7 +218,7 @@ class CStruct(object):
             struct_type, struct_name, keywords)
         self.children: List[CStruct] = []
         self.variables: List[Tuple[str, str, str]] = []
-        self.parent = None
+        self.parent: Optional[CStruct] = None
         self.elements = [self.first_line]
 
     def _get_first_line(self, struct_type: str, struct_name: str, keywords: List[str]) -> str:
@@ -260,8 +274,7 @@ class CStruct(object):
         code.append(self.generate_struct())
         return SEPARATOR.join(code)
 
-    @staticmethod
-    def _generate_field(field_name: str, field_value: str) -> str:
+    def _generate_field(self, field_name: str, field_value: str) -> str:
         return f".{field_name} = {field_value},"
 
     def add_reference_field(self, field_name: str, reference_name: str) -> None:
@@ -385,7 +398,7 @@ def extract_coap_resources(affordance_name: str, affordance_type: str, resources
                     index], f"ERROR: Method {method_name} already used for href {href}"
             methods[index].extend(op_methods)
 
-        header_file: str = resource.get("riot_os:header_file", None)
+        header_file: str = resource.get("riot_os:header_file")
 
         if header_file and header_file not in header_files:
             header_files.append(header_file)
@@ -434,18 +447,17 @@ def parse_command_line_arguments() -> argparse.Namespace:
     parser.add_argument('--meta_data_path',
                         help="JSON file with user defined meta data")
     parser.add_argument('--placeholders_path',
+                        nargs='?',
                         help="JSON file with placeholders replacements")
     parser.add_argument('--bindings_path',
+                        nargs='?',
                         help="JSON file with bindings")
     parser.add_argument('--output_path',
                         help="The path to the output file")
-    parser.add_argument('--used_modules', nargs='*',
-                        help="List of modules that have been declared in the build process")
     return parser.parse_args()
 
 
 def assert_command_line_arguments(args: argparse.Namespace) -> None:
-    assert args.board, "ERROR: Argument board has to be defined"
     assert args.meta_data_path, "ERROR: No instance information defined!"
 
 
@@ -669,7 +681,7 @@ def add_forms(parent: CStruct, affordance_type: str, affordance: dict) -> None:
 
 
 def add_type(parent: CStruct, affordance: dict) -> None:
-    if affordance.get("@type", None):
+    if affordance.get("@type"):
         struct_name = f'{parent.struct_name}_type'
         type_list: List[str] = affordance["@type"]
         if isinstance(type_list, str):
@@ -987,7 +999,7 @@ def split_uri(uri, separator):
 
 
 def add_uri(parent: CStruct, c_field_name: str, json_field_name: str, data):
-    if data.get(json_field_name, None):
+    if data.get(json_field_name):
         struct_name = f'{parent.struct_name}_{c_field_name}'
         struct = CStruct(f"{NAMESPACE}_uri_t",
                          struct_name)
@@ -1170,6 +1182,10 @@ def add_context(parent: CStruct, schema):
         struct = CStruct("json_ld_context_t",
                          f'{struct_name}_{index}')
         if isinstance(context, str):
+            if context == "https://www.w3.org/2019/wot/td/v1":
+                # Don't add this URL to the context as this is already
+                # being done by the C implementation
+                continue
             struct.add_field("value", f'"{context}"')
         else:
             key, value = list(context.items())[0]
@@ -1189,7 +1205,7 @@ def add_context(parent: CStruct, schema):
 
 
 def add_links(parent: CStruct, schema):
-    if schema.get("links", None):
+    if schema.get("links"):
         links = schema["links"]
         for index, link in enumerate(links):
             struct_name = f'{parent.struct_name}_link'
@@ -1296,7 +1312,7 @@ def get_result(app_dir_path, thing_model_paths, meta_data_path, bindings_path, p
     return SEPARATOR.join(result_elements)
 
 
-def main() -> None:
+def main_func() -> None:
     args = parse_command_line_arguments()
     assert_command_line_arguments(args)
 
@@ -1306,4 +1322,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    main_func()
