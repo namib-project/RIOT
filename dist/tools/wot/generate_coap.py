@@ -447,8 +447,10 @@ def parse_command_line_arguments() -> argparse.Namespace:
     parser.add_argument('--meta_data_path',
                         help="JSON file with user defined meta data")
     parser.add_argument('--placeholders_path',
+                        nargs='?',
                         help="JSON file with placeholders replacements")
     parser.add_argument('--bindings_path',
+                        nargs='?',
                         help="JSON file with bindings")
     parser.add_argument('--output_path',
                         help="The path to the output file")
