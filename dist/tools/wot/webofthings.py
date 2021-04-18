@@ -342,7 +342,7 @@ class ThingModel(object):
         if parsed_href.netloc:
             return ThingModel.get_from_url(href)
         elif origin_url:
-            absolute_url = urljoin(origin_url, parsed_url.path)
+            absolute_url = urljoin(origin_url, parsed_href.path)
             return ThingModel.get_from_url(absolute_url)
         elif origin_path:
             path = os.path.join(origin_path, parsed_href.path)
