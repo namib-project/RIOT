@@ -5,8 +5,11 @@
 # directory for more details.
 
 import os
+import sys
 import json
 import copy
+import requests
+from urllib.parse import urlparse, urljoin
 
 class ThingDescription(object):
 
