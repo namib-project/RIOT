@@ -458,7 +458,6 @@ def parse_command_line_arguments() -> argparse.Namespace:
 
 
 def assert_command_line_arguments(args: argparse.Namespace) -> None:
-    assert args.board, "ERROR: Argument board has to be defined"
     assert args.meta_data_path, "ERROR: No instance information defined!"
 
 
