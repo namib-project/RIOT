@@ -13,7 +13,13 @@ import os
 import sys
 from urllib.parse import urlparse, urljoin
 from datetime import datetime
-from typing import List, Tuple, IO, Any
+from typing import (
+    List,
+    Tuple,
+    IO,
+    Any,
+    Optional,
+)
 import warnings
 from webofthings import (
     ThingDescription,
@@ -212,7 +218,7 @@ class CStruct(object):
             struct_type, struct_name, keywords)
         self.children: List[CStruct] = []
         self.variables: List[Tuple[str, str, str]] = []
-        self.parent = None
+        self.parent: Optional[CStruct] = None
         self.elements = [self.first_line]
 
     def _get_first_line(self, struct_type: str, struct_name: str, keywords: List[str]) -> str:
