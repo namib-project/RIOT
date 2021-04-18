@@ -1308,7 +1308,7 @@ def get_result(app_dir_path, thing_model_paths, meta_data_path, bindings_path, p
     return SEPARATOR.join(result_elements)
 
 
-def main() -> None:
+def main_func() -> None:
     args = parse_command_line_arguments()
     assert_command_line_arguments(args)
 
@@ -1318,4 +1318,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    main_func()
