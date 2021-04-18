@@ -47,6 +47,9 @@ class ThingDescription(object):
         for affordance_type in ["properties", "actions", "events",]:
             self.validate_affordances(affordance_type)
 
+        for security in self.security:
+            assert security in self.securityDefinitions
+
     def validate_affordances(self, affordance_type):
         affordances = getattr(self, affordance_type)
         required_affordances = affordances.pop("required")
@@ -114,12 +117,13 @@ class ThingDescription(object):
         else:
             if not self.securityDefinitions:
                 self.securityDefinitions = meta_data["securityDefinitions"]
-                assert "security" in thing_model
             else:
                 for security_definition in meta_data["securityDefinitions"]:
                     self.securityDefinitions.append(security_definition)
 
         securities = meta_data.get("security", [])
+        if isinstance(securities, str):
+            securities = [securities]
         if not default_security:
             if not self.security:
                 self.security = securities
