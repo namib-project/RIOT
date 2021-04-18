@@ -393,7 +393,7 @@ def extract_coap_resources(affordance_name: str, affordance_type: str, resources
                     index], f"ERROR: Method {method_name} already used for href {href}"
             methods[index].extend(op_methods)
 
-        header_file: str = resource.get("riot_os:header_file", None)
+        header_file: str = resource.get("riot_os:header_file")
 
         if header_file and header_file not in header_files:
             header_files.append(header_file)
@@ -677,7 +677,7 @@ def add_forms(parent: CStruct, affordance_type: str, affordance: dict) -> None:
 
 
 def add_type(parent: CStruct, affordance: dict) -> None:
-    if affordance.get("@type", None):
+    if affordance.get("@type"):
         struct_name = f'{parent.struct_name}_type'
         type_list: List[str] = affordance["@type"]
         if isinstance(type_list, str):
@@ -995,7 +995,7 @@ def split_uri(uri, separator):
 
 
 def add_uri(parent: CStruct, c_field_name: str, json_field_name: str, data):
-    if data.get(json_field_name, None):
+    if data.get(json_field_name):
         struct_name = f'{parent.struct_name}_{c_field_name}'
         struct = CStruct(f"{NAMESPACE}_uri_t",
                          struct_name)
@@ -1197,7 +1197,7 @@ def add_context(parent: CStruct, schema):
 
 
 def add_links(parent: CStruct, schema):
-    if schema.get("links", None):
+    if schema.get("links"):
         links = schema["links"]
         for index, link in enumerate(links):
             struct_name = f'{parent.struct_name}_link'

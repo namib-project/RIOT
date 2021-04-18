@@ -15,16 +15,16 @@ class ThingDescription(object):
             dict(raw_thing_model), placeholders)
         setattr(self, "@context", thing_model.get("@context", []))
         setattr(self, "@type", thing_model.get("@type", []))
-        self.id = thing_model.get("id", None)
-        self.title = thing_model.get("title", None)
+        self.id = thing_model.get("id")
+        self.title = thing_model.get("title")
         self.titles = thing_model.get("titles", dict())
-        self.description = thing_model.get("description", None)
+        self.description = thing_model.get("description")
         self.descriptions = thing_model.get("descriptions", dict())
-        self.version = thing_model.get("version", None)
-        self.created = thing_model.get("created", None)
-        self.modified = thing_model.get("modified", None)
-        self.support = thing_model.get("support", None)
-        self.base = thing_model.get("base", None)
+        self.version = thing_model.get("version")
+        self.created = thing_model.get("created")
+        self.modified = thing_model.get("modified")
+        self.support = thing_model.get("support")
+        self.base = thing_model.get("base")
         self.properties = thing_model.get("properties", dict())
         self.actions = thing_model.get("actions", dict())
         self.events = thing_model.get("events", dict())
@@ -88,20 +88,20 @@ class ThingDescription(object):
     def insert_meta_data(self, meta_data):
         if meta_data is None:
             return
-        if meta_data.get("@context", None) and isinstance(meta_data["@context"], str):
+        if meta_data.get("@context") and isinstance(meta_data["@context"], str):
             meta_data["@context"] = [meta_data["@context"]]
         for context in meta_data.get("@context", []):
             if context == "http://www.w3.org/ns/td" or context == "https://www.w3.org/2019/wot/td/v1":
                 continue
             elif context not in getattr(self, "@context"):
                 getattr(self, "@context").append(context)
-        if meta_data.get("@type", None) and isinstance(meta_data["@type"], str):
+        if meta_data.get("@type") and isinstance(meta_data["@type"], str):
             meta_data["@type"] = [meta_data["@type"]]
         for json_ld_type in meta_data.get("@type", []):
             if json_ld_type != "ThingModel":
                 getattr(self, "@type").append(json_ld_type)
         default_security = False
-        if not meta_data.get("securityDefinitions", None):
+        if not meta_data.get("securityDefinitions"):
             if not self.securityDefinitions:
                 self.securityDefinitions = {"nosec_sc": {"scheme": "none"}}
                 self.security = ["nosec_sc"]
@@ -167,16 +167,16 @@ class ThingModel(object):
         wot_json = copy.deepcopy(input_json)
         setattr(self, "@context", wot_json.get("@context", []))
         setattr(self, "@type", wot_json.get("@type", []))
-        self.id = wot_json.get("id", None)
-        self.title = wot_json.get("title", None)
+        self.id = wot_json.get("id")
+        self.title = wot_json.get("title")
         self.titles = wot_json.get("titles", dict())
-        self.description = wot_json.get("description", None)
+        self.description = wot_json.get("description")
         self.descriptions = wot_json.get("descriptions", dict())
         self.version = wot_json.get("version", [])
-        self.created = wot_json.get("created", None)
-        self.modified = wot_json.get("modified", None)
-        self.support = wot_json.get("support", None)
-        self.base = wot_json.get("base", None)
+        self.created = wot_json.get("created")
+        self.modified = wot_json.get("modified")
+        self.support = wot_json.get("support")
+        self.base = wot_json.get("base")
         self.properties = wot_json.get("properties", {"required": []})
         self.actions = wot_json.get("actions", {"required": []})
         self.events = wot_json.get("events", {"required": []})
@@ -258,7 +258,7 @@ class ThingModel(object):
             if "extends" in link.get("rel", []):
                 assert "href" in link
                 # Not tm+json?
-                assert link.get("type", None) == "application/td+json"
+                assert link.get("type") == "application/td+json"
                 return link
 
         return None
@@ -312,7 +312,7 @@ class ThingModel(object):
 
     def extend_links(self, thing_model):
         for existing_link in self.links:
-            if existing_link.get("rel", None) == "extends":
+            if existing_link.get("rel") == "extends":
                 self.links.remove(existing_link)
         self.merge_array_fields(thing_model, "links")
 
