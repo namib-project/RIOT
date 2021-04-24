@@ -7,12 +7,12 @@
                     "href": "/led/status"
                 }
             ]
-        }, 
+        },
         "rememberState": {
             "forms": [
                 {
                     "riot_os:handler_function": "_led_status_handler",
-                    "href": "{{BASE_TOPIC}}/{{FRIENDLY_NAME}}/set/remember_state" 
+                    "href": "{{BASE_TOPIC}}/{{FRIENDLY_NAME}}/set/remember_state"
                 }
             ]
         }
