@@ -6,28 +6,28 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-from wot_structs import ThingInitFunction, CStruct, HandlerFunction
 import argparse
 import json
-import requests
 import os
 import sys
-from urllib.parse import urlparse, urljoin
-from datetime import datetime
+
+from urllib.parse import urlparse
 from typing import (
     List,
-    Tuple,
     IO,
     Any,
-    Optional,
 )
-import warnings
+from wot_structs import (
+    ThingInitFunction,
+    CStruct,
+    HandlerFunction,
+)
 from webofthings import (
     ThingDescription,
     ThingModel,
-    turn_string_field_to_list,
     prepare_wot_json,
 )
+
 
 NAMESPACE = "wot_td"
 PROPERTIES_NAME = 'properties'
@@ -399,6 +399,7 @@ def main_func() -> None:
 
     with open(args.output_path, 'w') as writer:
         writer.write(result)
+
 
 if __name__ == '__main__':
     main_func()

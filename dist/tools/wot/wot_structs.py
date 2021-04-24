@@ -4,7 +4,6 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-from __future__ import annotations
 import warnings
 from dateutil import parser
 
@@ -12,7 +11,6 @@ from typing import (
     List,
     Tuple,
     Dict,
-    IO,
     Any,
     Optional,
     cast,
@@ -33,10 +31,10 @@ SECURITY_SCHEME_TYPE = {
     "psk": "SECURITY_SCHEME_PSK",
     "oauth2": "SECURITY_SCHEME_OAUTH2",
 }
-"""Map of WoT security scheme identifiers to the 
+"""Map of WoT security scheme identifiers to the
 values of the C enum type `wot_td_sec_scheme_type_t`.
 
-See 
+See
 [here]({https://www.w3.org/TR/wot-thing-description}/#td-vocab-scheme--SecurityScheme)
 for more information.
 """
@@ -48,10 +46,10 @@ SECURITY_SCHEMA_INFORMATION_LOCATIONS = {
     "body": "SECURITY_SCHEME_IN_BODY",
     "cookie": "SECURITY_SCHEME_IN_COOKIE",
 }
-"""Map of WoT security scheme authencation locations
+"""Map of WoT security scheme authentication locations
 to the values of the C enum type `wot_td_sec_scheme_in_t`.
 
-See 
+See
 [here](https://www.w3.org/TR/wot-thing-description/#td-vocab-in--DigestSecurityScheme)
 for more information.
 """
@@ -63,7 +61,7 @@ SECURITY_SCHEMA_QOP = {
 """Map of quality of protection values for the digest security
 scheme to the values of the C enum type `wot_td_digest_qop_t`.
 
-See 
+See
 [here](https://www.w3.org/TR/wot-thing-description/#td-vocab-qop--DigestSecurityScheme)
 for more information.
 """
@@ -93,10 +91,10 @@ OPERATION_TYPES = {
     "writemultipleproperties": "FORM_OP_WRITE_MULTIPLE_PROPERTIES"
 }
 """
-Map of all possible operation types for interaction affordances 
+Map of all possible operation types for interaction affordances
 to the values of the C enum type `wot_td_form_op_type_t`.
 
-See 
+See
 [here](https://www.w3.org/TR/wot-thing-description/#td-vocab-op--Form)
 for more information.
 """
@@ -110,10 +108,10 @@ CONTENT_ENCODINGS = {
     "br": "CONTENT_ENCODING_BROTLI",
 }
 """
-Map of common content coding values to the values of the C enum type 
+Map of common content coding values to the values of the C enum type
 `wot_td_content_encoding_type_t`.
 
-See 
+See
 [here](https://www.w3.org/TR/wot-thing-description/#td-vocab-contentCoding--Form)
 for more information.
 """
@@ -129,10 +127,10 @@ JSON_TYPES = {
     "null": "JSON_TYPE_NULL"
 }
 """
-Map of possible JSON data types to the values of the C enum type 
+Map of possible JSON data types to the values of the C enum type
 `wot_td_json_type_t`.
 
-See 
+See
 [here](https://www.w3.org/TR/wot-thing-description/#td-vocab-type--DataSchema)
 for more information.
 """
@@ -150,13 +148,13 @@ class CObject(object):
     Args:
         struct_type (str): The type of the struct. Will be used for generating
             the struct`s type name.
-        parent: The struct's parent. 
+        parent: The struct's parent.
         keywords (list, optional): Optional keywords that can be inserted
             before the struct (e. g. `static`).
         data (dict, optional): The input data used for parsing. Either the
             complete or parts of the Thing Description. If omitted, the `data`
             of the struct's `parent` will be reused.
-        use_namespace: If `True`, the namespace `wot_td_` will be added to 
+        use_namespace: If `True`, the namespace `wot_td_` will be added to
             the resulting variable name as a prefix.
         struct_name (str, optional): The name of the struct.
 
@@ -166,7 +164,8 @@ class CObject(object):
 
     """
 
-    def __init__(self, struct_type: str, parent: Optional[CObject], keywords=None, data=None, use_namespace=True, struct_name=None):
+    def __init__(self, struct_type: str, parent: Optional["CObject"], keywords=None, data=None,
+                 use_namespace=True, struct_name=None):
         if keywords is None:
             keywords = []
         self._keywords = keywords
@@ -275,7 +274,7 @@ class CObject(object):
     def add_unordered_field(self, field: str) -> None:
         self.elements.append(f"{field},")
 
-    def add_child(self, child: CObject, add_at_back=False) -> None:
+    def add_child(self, child: "CObject", add_at_back=False) -> None:
         if add_at_back:
             self.children.append(child)
         else:
@@ -292,7 +291,7 @@ class CFunction(CObject):
 class ThingInitFunction(CFunction):
 
     def __init__(self, thing_description) -> None:
-        super().__init__(f'thing_t', None, data=thing_description, struct_name="thing")
+        super().__init__('thing_t', None, data=thing_description, struct_name="thing")
         self._generate_fields()
 
     def _generate_fields(self) -> None:
@@ -340,7 +339,7 @@ class ThingInitFunction(CFunction):
 class HandlerFunction(CFunction):
 
     @classmethod
-    def create(cls, wot_handler: str, actual_handler: str) -> HandlerFunction:
+    def create(cls, wot_handler: str, actual_handler: str) -> "HandlerFunction":
         handler_function = cls(wot_handler, None, use_namespace=False)
         handler_function.elements.append(
             f"return {actual_handler}(pdu, buf, len, ctx);")
@@ -375,7 +374,7 @@ class CStruct(CObject):
 
 class FieldStruct(CStruct):
     """
-    Base class for structs that represent fields of the Thing Desciption.
+    Base class for structs that represent fields of the Thing Description.
 
     """
 
@@ -397,13 +396,13 @@ class FieldStruct(CStruct):
         self._generate_fields()
 
     def _generate_fields(self) -> None:
-        """ 
+        """
         Converts the relevant fields of the Thing Description into C struct fields.
         """
         pass
 
     def _get_struct_name(self) -> str:
-        """ 
+        """
         Generates the name of the struct.
 
         Overrides the getter function of the parent class to append
@@ -506,7 +505,7 @@ class LinkedListStruct(FieldStruct):
         return field
 
     @classmethod
-    def _get_next_struct(cls, old_struct) -> LinkedListStruct:
+    def _get_next_struct(cls, old_struct) -> "LinkedListStruct":
         return cls(old_struct.parent, old_struct.type_name, old_struct.field_name, index=old_struct.index + 1,
                    use_namespace=old_struct.use_namespace)
 

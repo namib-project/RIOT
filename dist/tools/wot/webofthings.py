@@ -10,6 +10,11 @@ import json
 import copy
 import requests
 from urllib.parse import urlparse, urljoin
+from typing import (
+    IO,
+    Any
+)
+
 
 class ThingDescription(object):
 
@@ -44,7 +49,7 @@ class ThingDescription(object):
         self.validate()
 
     def validate(self):
-        for affordance_type in ["properties", "actions", "events",]:
+        for affordance_type in ["properties", "actions", "events"]:
             self.validate_affordances(affordance_type)
 
         for security in self.security:
@@ -145,7 +150,7 @@ class ThingDescription(object):
     def insert_bindings(self, bindings):
         if bindings is None:
             return
-        for affordance_type in ["properties", "actions", "events",]:
+        for affordance_type in ["properties", "actions", "events"]:
             affordance_bindings = bindings.get(affordance_type, dict())
             affordances = getattr(self, affordance_type)
             for key, value in affordance_bindings.items():
@@ -248,7 +253,7 @@ class ThingModel(object):
         else:
             assert isinstance(self.security, list)
 
-        for affordance_type in ["properties", "actions", "events",]:
+        for affordance_type in ["properties", "actions", "events"]:
             affordances = getattr(self, affordance_type)
             if "required" in affordances:
                 assert isinstance(affordances["required"], list)
@@ -330,7 +335,8 @@ class ThingModel(object):
         for field in ["@type", "@context", "version"]:
             self.merge_array_fields(thing_model, field)
 
-        for field in ["id", "title", "titles", "description", "descriptions", "created", "modified", "support", "base"]:
+        for field in ["id", "title", "titles", "description", "descriptions",
+                      "created", "modified", "support", "base"]:
             if not getattr(self, field):
                 setattr(self, field, getattr(thing_model, field))
 
@@ -378,4 +384,3 @@ def prepare_wot_json(wot_json):
     turn_string_field_to_list(wot_json, "@context")
     turn_string_field_to_list(wot_json, "@type")
     turn_string_field_to_list(wot_json, "security")
-
