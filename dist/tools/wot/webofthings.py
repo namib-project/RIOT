@@ -179,7 +179,7 @@ class ThingModel(object):
         self.titles = wot_json.get("titles", dict())
         self.description = wot_json.get("description")
         self.descriptions = wot_json.get("descriptions", dict())
-        self.version = wot_json.get("version", [])
+        self.version = wot_json.get("version", dict())
         self.created = wot_json.get("created")
         self.modified = wot_json.get("modified")
         self.support = wot_json.get("support")
@@ -242,11 +242,6 @@ class ThingModel(object):
         else:
             assert isinstance(at_type, list)
         setattr(self, "@type", at_type)
-
-        if isinstance(self.version, str):
-            self.version = [self.version]
-        else:
-            assert isinstance(self.version, list)
 
         if isinstance(self.security, str):
             self.security = [self.security]
