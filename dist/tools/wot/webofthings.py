@@ -109,7 +109,7 @@ class ThingDescription(object):
         default_security = False
         if not meta_data.get("securityDefinitions"):
             if not self.securityDefinitions:
-                self.securityDefinitions = {"nosec_sc": {"scheme": "none"}}
+                self.securityDefinitions = {"nosec_sc": {"scheme": "nosec"}}
                 self.security = ["nosec_sc"]
                 default_security = True
                 info = 'No security definitions found! Using "no security" as default.'
