@@ -1041,7 +1041,7 @@ class EnumStruct(LinkedListStruct):
     @classmethod
     def parse(cls, parent: CObject) -> None:
         if parent.data.get("enum"):
-            cls(parent, "data_enums", "enum")
+            cls(parent, "data_enums", "enum", ref_name="enumeration")
 
     @property
     def _iterable_data(self) -> list:
