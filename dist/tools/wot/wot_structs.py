@@ -313,14 +313,43 @@ class CVariable(CObject):
 
 class CFunction(CObject):
 
+    def __init__(self, return_type: str, function_name: str, parameters=None, keywords=None, data=None,
+                 use_namespace=True):
+        if parameters is None:
+            parameters = []
+        self.parameters: List[Tuple[str, str]] = parameters
+
+        super().__init__(return_type, None, data=data, struct_name=function_name, keywords=keywords, use_namespace=use_namespace)
+
     def add_function_line(self, line: str) -> None:
-        pass
+        raise NotImplementedError
+
+    @property
+    def struct_type(self) -> str:
+        return self._struct_type
+
+    def _get_struct_name(self) -> str:
+        struct_name = self._struct_name
+        if self.use_namespace:
+            struct_name = f'{NAMESPACE}_{struct_name}'
+
+        return struct_name
+
+    @property
+    def _first_line(self) -> str:
+        parameters = ", ".join([f'{x} {y}' for (x, y) in self.parameters])
+        return f"{self.struct_type} {self.struct_name}({parameters}){{"
+
+    @property
+    def _last_line(self) -> str:
+        return f"{SEPARATOR + INDENT}return 0;{NEW_LINE}}}"
 
 
 class ThingInitFunction(CFunction):
 
     def __init__(self, thing_description) -> None:
-        super().__init__('thing_t', None, data=thing_description, struct_name="thing")
+        super().__init__('int', "wot_td_config_init", data=thing_description, parameters=[("wot_td_thing_t", "*thing")],
+        use_namespace=False)
         self._generate_fields()
 
     def _generate_fields(self) -> None:
@@ -354,37 +383,31 @@ class ThingInitFunction(CFunction):
         return securityDefinitionsMap
 
     @property
-    def _first_line(self) -> str:
-        return f"int {NAMESPACE}_config_init({self.struct_type} *{self.struct_name}){{"
-
-    @property
     def _last_line(self) -> str:
         return f"{SEPARATOR + INDENT}return 0;{NEW_LINE}}}"
 
     def _generate_field(self, field_name: str, field_value: str) -> str:
-        return f"{self.struct_name}->{field_name} = {field_value};"
+        return f"thing->{field_name} = {field_value};"
 
 
 class HandlerFunction(CFunction):
 
+    def __init__(self, return_type: str, wot_handler: str, actual_handler: str, parameters: List[Tuple[str, str]], keywords: List[str]):
+        # self.handler_name = function_name
+        super().__init__(return_type, wot_handler, parameters=parameters, keywords=keywords, use_namespace=False)
+
+        self.elements.append(f'return {actual_handler}(pdu, buf, len, ctx);')
+
     @classmethod
     def create(cls, wot_handler: str, actual_handler: str) -> "HandlerFunction":
-        handler_function = cls(wot_handler, None, use_namespace=False)
-        handler_function.elements.append(
-            f"return {actual_handler}(pdu, buf, len, ctx);")
-        return handler_function
-
-    @property
-    def _first_line(self) -> str:
-        # TODO: keywords + type + name + parameters + {
-        return f"static ssize_t {self.struct_type}(coap_pkt_t *pdu, uint8_t *buf, size_t len, void *ctx)\n{{\n"
+        keywords = ["static"]
+        return_type = "ssize_t"
+        parameters = [("coap_pkt_t", "*pdu"), ("uint8_t", "*buf"), ("size_t", "len"), ("void", "*ctx")]
+        return cls(return_type, wot_handler, actual_handler, parameters, keywords)
 
     @property
     def _last_line(self) -> str:
         return "\n}"
-
-    def generate_c_code(self) -> str:
-        return super().generate_c_code()
 
 
 class CStruct(CObject):
