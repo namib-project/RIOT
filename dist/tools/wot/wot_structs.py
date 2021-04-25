@@ -282,6 +282,35 @@ class CObject(object):
         child.parent = self
 
 
+class CVariable(CObject):
+
+    def __init__(self, parent: CObject, type: str, name: str, value: Any,
+                 keywords: Optional[List[str]]) -> None:
+
+        self.type_name = type
+        self.field_name = name
+        self.value = value
+        self.options = parent.options
+
+        super().__init__(self.type_name, parent, use_namespace=False, keywords=keywords)
+
+        parent.add_reference_field(self.field_name, self.struct_name)
+        parent.add_child(self)
+
+    @classmethod
+    def create(cls, parent: CObject, type: str, field_name: str, value: Optional[Any], keywords=None) -> None:
+        if value:
+            cls(parent, type, field_name, value, keywords)
+
+    def _get_struct_name(self) -> str:
+        assert self.parent
+        return f'{self.parent.struct_name}_{self.field_name}'
+
+    def generate_c_code(self):
+        keywords = " ".join(self.keywords)
+        return f'{keywords} {self.type_name} {self.struct_name} = {self.value};'
+
+
 class CFunction(CObject):
 
     def add_function_line(self, line: str) -> None:
@@ -1104,7 +1133,8 @@ class ArraySchemaStruct(FieldStruct):
         DataSchemaArrayStruct.parse(self, "items")
 
         for ref_name, field_name in [("min_items", "minItems"), ("max_items", "maxItems")]:
-            self.add_plain_field(ref_name, self.data.get(field_name))
+            CVariable.create(self, "uint32_t", ref_name,
+                             self.data.get(field_name), keywords=["const"])
 
 
 class ObjectSchemaStruct(FieldStruct):
