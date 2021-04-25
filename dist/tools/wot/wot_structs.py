@@ -774,7 +774,7 @@ class OperationTypeStruct(LinkedListStruct):
     def _generate_fields(self) -> None:
         type_list = self._iterable_data
         operation = OPERATION_TYPES[type_list[self.index]]
-        self.add_plain_field("op", operation)
+        self.add_plain_field("op_type", operation)
 
 
 class SecurityStruct(LinkedListStruct):
@@ -1067,7 +1067,7 @@ class DataSchemaArrayStruct(LinkedListStruct):
 
     def _generate_fields(self) -> None:
         value = self._iterable_data[self.index]
-        DataSchemaStruct.parse(self, "items", data=value)
+        DataSchemaStruct.parse(self, "items", data=value, ref_name="value")
 
 
 class NumericSchemaStruct(FieldStruct):

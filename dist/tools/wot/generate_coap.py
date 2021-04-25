@@ -184,7 +184,7 @@ def extract_coap_resources(affordance_name: str, affordance_type: str, resources
         else:
             index: int = hrefs.index(href)
             assert handlers[
-                       index] == handler_function, f"ERROR: Different handler function for {href}"
+                index] == handler_function, f"ERROR: Different handler function for {href}"
             for method_name in op_methods:
                 assert method_name not in methods[
                     index], f"ERROR: Method {method_name} already used for href {href}"
@@ -256,7 +256,7 @@ def assert_command_line_arguments(args: argparse.Namespace) -> None:
 
 def generate_includes() -> str:
     dependencies = DEFAULT_DEPENDENCIES + \
-                   [f'"{header_file}"' for header_file in header_files]
+        [f'"{header_file}"' for header_file in header_files]
 
     dependencies = [f'#include {dependency}' for dependency in dependencies]
     return "\n".join(dependencies)
